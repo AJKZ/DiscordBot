@@ -7,6 +7,8 @@ config({
     path: __dirname + '/.env'
 });
 
+const PREFIX = process.env.PREFIX;
+
 bot.on('ready', () => {
     console.log(bot.user.username + ' is online. \n');
 });
