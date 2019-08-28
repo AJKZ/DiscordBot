@@ -1,0 +1,8 @@
+# Folder config #
+.vscode
+node_modules
+assets
+
+# Files #
+package-lock.json
+.env
