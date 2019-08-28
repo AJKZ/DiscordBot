@@ -6,31 +6,44 @@ require('dotenv').config();
 const PREFIX = process.env.PREFIX;
 
 const bot = new Discord.Client();
+
 bot.commands = new Discord.Collection();
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-for(const file of commandFiles) {
-    const cmd = require(`./commands/${file}`);
-    // set a new item in the Collection
-	// with the key as the command name and the value as the exported module
-    bot.commands.set(cmd.name, cmd);
-}
+bot.aliases = new Discord.Collection();
+
+['command'].forEach(handler => {
+    require(`./handler/${handler}`)(bot);
+});
+
+// const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
+// for(const file of commandFiles) {
+//     const cmd = require(`./commands/${file}`);
+//     // set a new item in the Collection
+// 	// with the key as the command name and the value as the exported module
+//     bot.commands.set(cmd.name, cmd);
+// }
 
 bot.once('ready', () => {
     console.log(bot.user.username + ' is online. \n');
 });
 
-bot.on('message', message => {
-    // Check whether author is the bot OR 
-    // the message does not start with the prefix
+bot.on('message', async (message) => {
     if(message.author.bot ||
-        !message.content.startsWith(PREFIX)) { return; }
+        !message.content.startsWith(PREFIX) ||
+        !message.guild) { return; }
+    
+    if(!message.member) {
+        message.member = await message.guild.fetchMember(message);
+    }
 
     // get the commands and arguments after prefix
     const args = message.content.slice(PREFIX.length).split(/ +/);
     const cmdName = args.shift().toLocaleLowerCase();
 
+    if(cmdName.length === 0) { return; }
+
     // find command
-    const cmd = bot.commands.get(cmdName)
+    let cmd = bot.commands.get(cmdName)
         || bot.commands.find(cmd => cmd.aliases && cmd.aliases.includes(cmdName));
 
     if(!cmd) { return; }
@@ -54,7 +67,7 @@ bot.on('message', message => {
 
     // execute command
     try {
-        cmd.execute(bot, message, args);
+        cmd.run(bot, message, args);
     }
     catch (error) {
         console.log(error);
