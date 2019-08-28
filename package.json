@@ -19,6 +19,7 @@
   "homepage": "https://github.com/AJKZ/DiscordBot#readme",
   "dependencies": {
     "discord.js": "^11.5.1",
-    "dotenv": "^8.1.0"
+    "dotenv": "^8.1.0",
+    "mw-dict": "^3.0.0"
   }
 }
