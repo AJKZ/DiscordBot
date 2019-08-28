@@ -1,9 +1,8 @@
 module.exports = {
 	name: 'prune',
     description: 'Delete up to 100 messages from the chat history.',
-    args: true,
-
-	execute(bot, message, args) {
+	args: true,
+	run: async (bot, message, args) => {
 		const amount = parseInt(args[0]) + 1;
 
 		if (isNaN(amount)) {
